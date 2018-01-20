@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Model\User;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Chaplain extends Model
+{
+    protected $dates = ['start','end'];
+    
+    public function scopeFilter($query, $filters)
+    {
+        if ($year = $filters['year']) {
+            $query->whereYear('start', $year);
+        }
+    }
+
+    public static function chaps()
+    {
+    	return static::selectRaw('year(start) year, count(*) published')
+            ->groupBy('year')
+            ->orderByRaw('min(start) desc')
+            ->take(1)
+            ->get()
+            ->toArray();
+    }
+}
